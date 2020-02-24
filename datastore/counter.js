@@ -2,7 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const sprintf = require('sprintf-js').sprintf;
 
-var counter = 0;
+// Don't need this anymore.
+// var counter = 0;
 
 // Private helper functions ////////////////////////////////////////////////////
 
@@ -16,10 +17,13 @@ const zeroPaddedNumber = (num) => {
 };
 
 const readCounter = (callback) => {
+  // goes into the file and tries to read the data.
   fs.readFile(exports.counterFile, (err, fileData) => {
     if (err) {
+      // if it can't read the data, call the callback with no error and a "count" of 0.
       callback(null, 0);
     } else {
+      // if it can, call the callback with no error and a "count" of whatever was inside the file.
       callback(null, Number(fileData));
     }
   });
@@ -38,9 +42,28 @@ const writeCounter = (count, callback) => {
 
 // Public API - Fix this function //////////////////////////////////////////////
 
-exports.getNextUniqueId = () => {
-  counter = counter + 1;
-  return zeroPaddedNumber(counter);
+exports.getNextUniqueId = (callback) => {
+  // call readCounter.
+  // readCounter takes one callback, which will be run when the reading succeeds or fails.
+  // no chance of error being returned (see readCounter code), but just in case, we write the function as if it could.
+  let currentNumber = readCounter( (err, returnedNumber) => {
+    if (err) {
+      throw ('error reading counter');
+    } else {
+      return returnedNumber;
+    }
+  });
+  let nextNumber = currentNumber + 1;
+  // call writeCounter, and return the value it returns.
+  // writeCounter takes a number and a callback, which will be run when the writing succeeds or fails.
+  // no chance of error being returned (see readCounter code), but just in case, we write the function as if it could.
+  writeCounter(nextNumber, (err, counterString) => {
+    if (err) {
+      throw ('error writing counter');
+    } else {
+      callback(null, counterString);
+    }
+  });
 };
 
 
