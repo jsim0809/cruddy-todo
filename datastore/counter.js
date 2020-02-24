@@ -2,7 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const sprintf = require('sprintf-js').sprintf;
 
-var counter = 0;
+// Not needed
+// var counter = 0;
 
 // Private helper functions ////////////////////////////////////////////////////
 
@@ -49,18 +50,16 @@ exports.getNextUniqueId = (callback) => {
     if (err) {
       throw ('error reading counter');
     } else {
-      counter = returnedNumber;
-    }
-  });
-  counter++;
-  // call writeCounter, and return the value it returns.
-  // writeCounter takes a number and a callback, which will be run when the writing succeeds or fails.
-  // no chance of error being returned (see readCounter code), but just in case, we write the function as if it could.
-  writeCounter(counter, (err, counterString) => {
-    if (err) {
-      throw ('error writing counter');
-    } else {
-      callback(null, counterString);
+      // call writeCounter, and return the value it returns.
+      // writeCounter takes a number and a callback, which will be run when the writing succeeds or fails.
+      // no chance of error being returned (see readCounter code), but just in case, we write the function as if it could.
+      writeCounter(returnedNumber + 1, (err, counterString) => {
+        if (err) {
+          throw ('error writing counter');
+        } else {
+          callback(null, counterString);
+        }
+      });
     }
   });
 };
