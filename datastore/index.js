@@ -38,13 +38,18 @@ exports.readAll = (callback) => {
   });
 };
 
+// read todo from dataDir based on id
+// must read contents of todo item file and send contents in response to client
 exports.readOne = (id, callback) => {
-  var text = items[id];
-  if (!text) {
-    callback(new Error(`No item with id: ${id}`));
-  } else {
-    callback(null, { id, text });
-  }
+  // construct filepath based on ID
+  // fs.readFile of that
+  fs.readFile(path.join(exports.dataDir, id) + '.txt', 'utf8', (err, fileText) => {
+    if (err) {
+      callback(new Error(`No item with id: ${id}`), null);
+    } else {
+      callback(null, {id, text: fileText});
+    }
+  });
 };
 
 exports.update = (id, text, callback) => {
