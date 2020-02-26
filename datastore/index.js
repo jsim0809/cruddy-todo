@@ -40,6 +40,13 @@ exports.readAll = (callback) => {
     });
 };
 
+/*
+  // get array of fileNames
+  // THEN iterate over each file named by fileName
+    // in each file, retrieve text and create new array of todo objects
+  // THEN (after Promises.All) return array from one up the chain
+*/
+
 // fs.readdir(exports.dataDir, (err, fileArray) => {
 //   if (err) {
 //     throw ('error reading directory');
