@@ -2,8 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
-
-var items = {};
+const Promise = require('bluebird');
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
 
@@ -27,16 +26,35 @@ exports.create = (text, callback) => {
 // sends back an array of "todos"
 // todo looks like {id: <id>, text: <id>}
 exports.readAll = (callback) => {
-  fs.readdir(exports.dataDir, (err, fileArray) => {
-    if (err) {
-      throw ('error reading directory');
-    } else {
-      callback(null, _.map(fileArray, (fileName) => {
-        return {id: fileName.slice(0, -4), text: fileName.slice(0, -4) };
-      }));
-    }
-  });
+  var readdirAsync = Promise.promisify(fs.readdir);
+  var readOneAsync = Promise.promisify(exports.readOne);
+
+  return readdirAsync(exports.dataDir)
+    .then((array) => {
+      callback(null, Promise.all(_.map(array, (fileName) => {
+        return {id: fileName.slice(0, -4), text: exports.readOneAsync(fileName)};
+      })));
+    })
+    .catch((error) => {
+      throw (error);
+    });
 };
+
+// fs.readdir(exports.dataDir, (err, fileArray) => {
+//   if (err) {
+//     throw ('error reading directory');
+//   } else {
+//     callback(null, _.map(fileArray, (fileName) => {
+//       return {id: fileName.slice(0, -4), text: exports.readOne(fileName, (err, fileText) => {
+//         if (err) {
+//           throw ('error');
+//         } else {
+//           return fileText;
+//         }
+//       })};
+//     }));
+//   }
+// });
 
 // read todo from dataDir based on id
 // must read contents of todo item file and send contents in response to client
